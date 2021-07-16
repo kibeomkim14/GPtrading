@@ -86,7 +86,7 @@ def performance(tree,price,volume,days):
 
     pos = 0 # position
     cum_return = 1 # cumulative return
-    # ret_set = [] # list of returns which will be appended soon.
+    # ret_set = [] # list of returns which will be appended soon. (Optional)
 
     for i in range(1,weight.shape[0]):
         # Given that no position (pos =0) and buy signal at the date,
@@ -107,7 +107,7 @@ def performance(tree,price,volume,days):
     annual_return = cum_return ** (252/weight.shape[0]) 
     
     # with the ret_set we obtained above, we calculate daily return volatility
-    # Then, annualize the daily volatility.
+    # (Optional, needed for calculating Sharpe ratio)Then, annualize the daily volatility.
     # annual_vol    = np.std(ret_set)*np.sqrt(252)
     
     return annual_return
@@ -185,7 +185,8 @@ best_gen    = 0
 GENERATIONS = 50
 
 # Set Benchmark annual returns to measure performance
-# See SPindex csv file for more detail.
+# Return is calculated then annualized.
+# See SPindex.csv file for more detail.
 
 BM_ret_tr     = 1.10934558317888
 BM_ret_te     = 1.150587370026509
@@ -231,14 +232,17 @@ if __name__ == '__main__':
     
     
     for gen in range(GENERATIONS):    
+        
+        # if best tree is not found within 15 generations, finish the process.
         if best_gen + 15 < gen:
-            print("Best tree not found for 10 generations. Breaking the loop..")
+            print("Best tree not found for 15 generations. Breaking the loop..")
             break
         print("-------- Gen {} Start.".format(gen+1))
         
-        # Performance of trees for the period from 2012-04-19 ~ 2016-04-22       
+        # Performance of trees for the training period       
         perf = []
         for tree in population:
+            # assess the performance (annual return)
             perf.append(pool.apply_async(performance, args=(tree,close[1500-term_max:],vol[1500-term_max:],term_max)))
     
         annuals = [p.get() for p in perf]
@@ -249,14 +253,19 @@ if __name__ == '__main__':
             parent1, gen_best = selection(population, annuals, BM_ret_tr)
             parent2, _        = selection(population, annuals, BM_ret_tr)
             
+            # After selecting two trees, perform crossover and mutation operation according to Koza.
             parent1.crossover_(parent2)
             parent1.mutation_(term_max,True)        
             next_population.append(parent1)
                 
         
         population = next_population
+        
+        # calculate the return for best tree from each generation.
         a_ret = performance(gen_best,close[1500-term_max:],vol[1500-term_max:],term_max)
         
+        # Compare the generation best with all-time best, if generation best is better, assign the tree as all-time best.
+        # Then print the result.
         if a_ret > best_return:
             best_return = a_ret
             best_gen    = gen
@@ -265,7 +274,7 @@ if __name__ == '__main__':
             print("gen:", gen+1, ", best_annual_return:", round(a_ret,4)) 
             best_tree.print_()
         
-        # Measure time taken
+        # Measure time taken for each generation.
         t2 = time.time()
         print('COMPLETE - Generation {g} : {s:.3f} seconds'.format(g=gen+1, s=t2-t1))
         t1 = t2
@@ -283,7 +292,9 @@ if __name__ == '__main__':
     
     end = time.time()
     print('RUN COMPLETE : {} min {} seconds'.format(round((end - start)//60) , round(((end - start)%60))))
-    '''
+    
+    
+    # Obtain signal based on the rule of best tree generated.
     sig  = []
     sig_sum = 0 
     for i in range(len(close[250:1250])):
@@ -293,7 +304,7 @@ if __name__ == '__main__':
     if sig_sum == 0:
         print('no weight..')
     
+    # store the asset allocation weight as pd.DataFrame.
     best_w = pd.DataFrame(sig, index = close[250:1250].index, columns=['signal']) * 1
     
     
-    '''

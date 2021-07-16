@@ -38,8 +38,8 @@ return(compared to the Benchmark) and annualized Sharpe Ratio.
 ```
 ├── README.md
 ├── datas
-│   └── original_data /S&PFuturects.csv
-└── src
+│   └── original_data /S&Pctsfuture.csv
+└── mainfile
     ├── GPTree.py
     └── main_other_v.py
 

@@ -1,6 +1,5 @@
 # Genetic Programming for Trading
 
-# Project Description
 In this project, the goal is to attempt to beat the buy & hold strategy(B&H) on S&P500 Futures return using genetic programming(GP). GP is a technique of evolving programs, starting from a population of unfit (usually random) programs, fit for a particular task by applying operations analogous to natural genetic processes to the population of programs. It is a heuristic search technique that searches for an optimal (or at least suitable) program among the space of all programs.
 
 At the start, the terminals and population (in other words, programs) will be specified and will be fed into the GP algorithm. As it goes, the algorithm will be optimized in the sense of maximizing investment returns - parameters associated with GP algorithm will be adjusted to achieve such return. For more information on the algorithm and its use, please look at Potvin, Soriano and Vallee (2004).

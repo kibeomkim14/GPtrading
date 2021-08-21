@@ -54,7 +54,7 @@ def geq(x,y) : return x > y
 def leq(x,y) : return x < y
 def eq(x,y)  : return x == y
 
-# Introduce REAL FUNCTIONS which take real price and volume date into account.
+# Introduce REAL FUNCTIONS which take price and volume dates into account.
 def MAX_(data,n): 
     if type(data) == int:
         return max(data,n)
@@ -101,18 +101,18 @@ def EMA_(data,n):
 FUNCTIONS   = [add,sub,mul,div,norm,max_,min_,avg_]
 REALFUNC    = [MAX_,MIN_,LAG_,VOL_,ROC_,SMA_,EMA_]
 RELATIONALS = [geq,leq,eq]
-
 BOOLEANS    = [AND_,OR_,NOT_]
 REALVALUE   = ['P', 'V']
-TERMINALS   = []
-for i in range(0,250): TERMINALS.append(i) 
+TERMINALS   = [i for i in range(0,250)] 
             
 #============================================================================#
 #============================================================================#
 #============================================================================#
 
+# Set the probability of mutation and crossover operation.
 P_Mutation  = 0.1
 P_Crossover = 0.6
+
 
 ##############################################################################
 ############################ BUILD GP TREE CLASS #############################
@@ -224,7 +224,7 @@ class Tree:
 
     def nodes_(self):
         '''
-        returns the number of leaves (i.e. terminals at the bottom).
+        returns the number of leaves (at the bottom).
         returns 1 if the node is the terminal node
         '''
         if self.f not in REALFUNC:
@@ -307,10 +307,10 @@ class Tree:
 
     def crossover_(self,other,crossPt=None): 
         '''
-        Swap parts of 2 trees at random nodes. First, we set crossover point
-        for both parent trees then perform swap. If the output trees are not
-        compatible - i.e. if we can't calculate, then we do not use these
-        output trees.
+        Swap parts of 2 trees at random node positions. First, we set crossover point
+        for both parent trees then swap. If the output trees are not
+        compatible - i.e. if we can't calculate the calculate the offspring tree, 
+        then we do not use that output tree.
         '''
         
         if self.depth == 0:
@@ -337,11 +337,12 @@ class Tree:
                 other.paste_(t2)
                 pass
                 
-            
-        # If we perform crossover function on grow and full tree, then both 
-        # trees are less likely to have sane swap points. If this happens, we
-        # cannot use the output tree for next run.
-        # Hence, we don't perform crossover and attempts next pair of trees.
+        '''    
+        If we perform crossover function on grow and full tree, then both 
+        trees are less likely to have same swap points. If this happens, we
+        cannot use the output tree for next run.
+        Hence, we don't perform crossover and try the next pair of trees.
+        '''
         try:
             if random.random() < 0.5:
                 self.left.crossover_(other.left,crossPt)

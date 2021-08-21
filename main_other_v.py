@@ -193,10 +193,10 @@ BM_ret_te     = 1.150587370026509
 
 
 '''
-Since we will be executing GP algorithm for large set of trees and the computation
-time increases drastically. Without parallel programming, running the below code
-takes more than 30 minutes. Hence, we import multiprocessing module to enable
-parallel programming. 
+Since we will be executing GP algorithm for large set of trees, the computation
+time associated with this task increases drastically. Without parallel programming, 
+running the below code takes more than 30 minutes. Hence, we import multiprocessing 
+module to enable parallel programming to speed up the computation. 
 '''
 
 if __name__ == '__main__':
